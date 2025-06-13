@@ -39,7 +39,7 @@ main :: proc() {
 
 	camera.target = {TILE_WIDTH, TILE_HEIGHT} / 2
 
-	character_position: raylib.Vector2 = {0, TILE_HEIGHT}
+	character_position: raylib.Vector2 = {TILE_WIDTH, TILE_HEIGHT}
 
 	ground_tiles := [?]raylib.Texture2D {
 		textures["assets/isometric/stone_N.png"],

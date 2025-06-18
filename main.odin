@@ -4,6 +4,7 @@ import "core:fmt"
 import "core:math/linalg"
 import "core:math/rand"
 import "core:path/filepath"
+import "core:strings"
 import "vendor:raylib"
 
 TILE_WIDTH :: 256
@@ -37,27 +38,29 @@ main :: proc() {
 		zoom     = 1,
 	}
 
-	camera.target = {TILE_WIDTH, TILE_HEIGHT} / 2
+	character_position: raylib.Vector2 = {300, 300}
 
-	character_position: raylib.Vector2 = {TILE_WIDTH, TILE_HEIGHT}
+	camera.target = {character_position.x, character_position.y}
 
 	ground_tiles := [?]raylib.Texture2D {
-		textures["assets/isometric/stone_N.png"],
-		textures["assets/isometric/stone_S.png"],
-		textures["assets/isometric/stone_E.png"],
-		textures["assets/isometric/stone_W.png"],
-		textures["assets/isometric/stoneSideUneven_N.png"],
-		textures["assets/isometric/stoneSideUneven_S.png"],
-		textures["assets/isometric/stoneSideUneven_E.png"],
-		textures["assets/isometric/stoneSideUneven_W.png"],
+		textures["stone_N.png"],
+		textures["stone_S.png"],
+		textures["stone_E.png"],
+		textures["stone_W.png"],
+		textures["stoneSideUneven_N.png"],
+		textures["stoneSideUneven_S.png"],
+		textures["stoneSideUneven_E.png"],
+		textures["stoneSideUneven_W.png"],
 	}
 
 	ground_objects := [?]raylib.Texture2D {
-		textures["assets/isometric/barrels_N.png"],
-		textures["assets/isometric/barrels_S.png"],
-		textures["assets/isometric/barrels_E.png"],
-		textures["assets/isometric/barrels_W.png"],
+		textures["barrels_N.png"],
+		textures["barrels_S.png"],
+		textures["barrels_E.png"],
+		textures["barrels_W.png"],
 	}
+
+	character_texture := [?]raylib.Texture2D{characters["Male_0_Idle0.png"]}
 
 	for !raylib.WindowShouldClose() {
 		free_all(context.temp_allocator)
@@ -87,9 +90,8 @@ main :: proc() {
 			}
 		}
 
-		character_texture := characters["assets/characters/male/Male_0_Idle0.png"]
 		raylib.DrawTexture(
-			character_texture,
+			character_texture[0],
 			i32(character_position.x),
 			i32(character_position.y),
 			raylib.WHITE,
@@ -120,7 +122,10 @@ load_textures :: proc(path: string) -> map[string]raylib.Texture2D {
 	matches, _ := filepath.glob(path)
 
 	for match in matches {
-		textures[match] = raylib.LoadTexture(fmt.ctprintf("%s", match))
+		full := strings.clone(match, context.temp_allocator)
+		name := filepath.base(full)
+		test := strings.clone_to_cstring(full, context.temp_allocator)
+		textures[name] = raylib.LoadTexture(test)
 	}
 
 	for match in matches {
